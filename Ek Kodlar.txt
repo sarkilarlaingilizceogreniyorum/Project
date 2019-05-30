@@ -1,0 +1,170 @@
+                                               Faulty Project's Code
+
+
+
+                                                  app.module.ts
+
+
+import { BrowserModule } from '@angular/platform-browser';
+import { ErrorHandler, NgModule } from '@angular/core';
+import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
+
+import { MyApp } from './app.component';
+import { HomePage } from '../pages/home/home';
+import { ListPage } from '../pages/list/list';
+
+import { StatusBar } from '@ionic-native/status-bar';
+import { SplashScreen } from '@ionic-native/splash-screen';
+import {AngularFireModule} from 'angularfire2';
+import {AngularFireDatabaseModule} from 'angularfire2/database';
+import { SongsPage } from '../pages/songs/songs';
+
+var firebaseConfig = {
+  apiKey: "AIzaSyD4VpdMkScYDzGI3AFbG1TqWgdWiIcuGSc",
+  authDomain: "lews-7da12.firebaseapp.com",
+  databaseURL: "https://lews-7da12.firebaseio.com",
+  projectId: "lews-7da12",
+  storageBucket: "lews-7da12.appspot.com",
+  messagingSenderId: "149563498342",
+  appId: "1:149563498342:web:f41a79b692c846a8"
+};
+
+@NgModule({
+  declarations: [
+    MyApp,
+    HomePage,
+    ListPage,
+    SongsPage
+  ],
+  imports: [
+    BrowserModule,
+    AngularFireDatabaseModule,
+    AngularFireModule,
+    AngularFireModule.initializeApp(firebaseConfig),
+    IonicModule.forRoot(MyApp),
+  ],
+  bootstrap: [IonicApp],
+  entryComponents: [
+    MyApp,
+    HomePage,
+    ListPage,
+    SongsPage
+  ],
+  providers: [
+    StatusBar,
+    SplashScreen,
+    {provide: ErrorHandler, useClass: IonicErrorHandler}
+  ]
+})
+export class AppModule {}
+
+
+                                               pages.songs.ts
+
+
+import { Component } from '@angular/core';
+import { NavController} from 'ionic-angular';
+import {AngularFireDatabase} from 'angularfire2/database';
+
+@Component({
+  selector: 'page-songs',
+  templateUrl: 'songs.html',
+})
+export class SongsPage {
+  items;
+  constructor(public navCtrl: NavController,public afd: AngularFireDatabase) {
+    this.getDataFromFireBase()
+  }
+
+  ionViewDidLoad() {
+    console.log('ionViewDidLoad SongsPage');
+  }
+      
+      getDataFromFireBase(){
+        this.afd.list('/SongData/').valueChanges().subscribe(
+          dataa=>{
+          console.log(JSON.stringify(dataa))
+          this.items=dataa;
+          }
+        )
+      }
+}
+
+                                                  pages.songs.html
+
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>songs</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+  <ion-item *ngFor="let item of items">
+    {{item}}
+  </ion-item>
+</ion-content>
+
+
+                                                 pages.player.html
+
+<ion-range min="0" max="{{sure}}" [ngModel]="anliksure" color="danger">
+       <ion-icon range-left small>{{anliksure}}</ion-icon>
+       <ion-icon range-right small>{{toplamsure}}</ion-icon>
+     </ion-range>
+
+     <button class="playButton" *ngIf="isPlay; else templateButton" ion-button (click)="playPause()" color="danger" icon-only large>
+       <ion-icon name="pause"></ion-icon>
+     </button>
+
+     <ng-template #templateButton>
+       <button class="playButton" ion-button (click)="playPause()" color="danger" icon-only large>
+         <ion-icon name="play"></ion-icon>
+
+       </button>
+     </ng-template>
+     
+
+                                                   pages.player.ts
+
+lews:any;
+  sure:number;
+  anlik:number;
+
+  toplamsure:string="00:00";
+  anliksure:string="00:00";
+  isPlay:boolean=false;
+  player=new Audio();
+
+ ionViewDidLoad(){
+      this.player.src="https://drive.google.com/file/d/1Vy5iwv3gqU3K-lBPZoxSPNG05dGnDvwd/";
+    }
+    playPause()
+    {
+      if (this.isPlay)
+      {
+        this.player.pause();
+        this.isPlay=false;
+      }
+      else
+      {
+        this.player.play();
+        this.isPlay=true;
+      }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
